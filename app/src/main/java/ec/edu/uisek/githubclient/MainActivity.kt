@@ -1,20 +1,28 @@
 package ec.edu.uisek.githubclient
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 
+/**
+ * CLASE: MainActivity
+ * -------------------
+ * EXP
+ * Es el punto de entrada de la aplicación.
+ * Su única responsabilidad en este Lab 3 es cargar el primer Fragmento (la Lista).
+ * Gestiona las transacciones de fragmentos usando el 'SupportFragmentManager'.
+ */
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+
+        // Verificamos si es la primera
+        if (savedInstanceState == null) {
+            // TRANSACCIÓN DE FRAGMENTO
+            supportFragmentManager.beginTransaction()
+                .setReorderingAllowed(true)
+                .add(R.id.fragmentContainer, RepositoryListFragment()) // Cargamos la Lista por defecto
+                .commit()
         }
     }
 }
