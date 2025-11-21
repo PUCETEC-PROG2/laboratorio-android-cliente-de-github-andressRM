@@ -1,14 +1,26 @@
-package ec.edu.uisek.githubclient // <---  paquete real
+package ec.edu.uisek.githubclient
+
+import com.google.gson.annotations.SerializedName
 
 /**
- * @param name: El título del repositorio.
- * @param description: Breve resumen de qué hace el proyecto.
- * @param language: El lenguaje de programación principal (ej. Kotlin).
- * @param stars: Número ficticio de estrellas para mostrar popularidad.
+ * Data Class: Repository
+
+ * EXPLICACIÓN FASE 4 (Retrofit):
+ *  modelo para mapear los datos que vienen de la API de GitHub.
+ *
+ * @SerializedName: Es la etiqueta que le dice a GSON:
+ * "Oye, busca en el JSON el campo 'stargazers_count' y guarda su valor en mi variable 'stars'".
  */
 data class Repository(
+    @SerializedName("name")
     val name: String,
-    val description: String,
-    val language: String,
+
+    @SerializedName("description")
+    val description: String?, // El ? significa que aceptamos nulos (si no hay descripción)
+
+    @SerializedName("language")
+    val language: String?,    // Puede ser nulo si el repo no tiene lenguaje definido
+
+    @SerializedName("stargazers_count") // renombramiento!
     val stars: Int
 )
