@@ -15,7 +15,7 @@ interface GitHubApiService {
 
     // @GET: Indica que vamos a LEER datos (petición HTTP GET).
     // "users/{username}/repos": Es la parte final de la URL (Endpoint).
-    // {username} es una variable que cambiaremos dinámicamente.
+    // {username} es una variable que cambiara dinámicamente.
     @GET("users/{username}/repos")
     fun listRepositories(@Path("username") username: String): Call<List<Repository>>
 }
