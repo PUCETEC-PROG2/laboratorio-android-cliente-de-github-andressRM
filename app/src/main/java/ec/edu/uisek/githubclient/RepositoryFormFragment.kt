@@ -17,6 +17,23 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class RepositoryFormFragment : Fragment() {
 
+    private var editingRepo: Repository? = null
+    private val miUsuario = "andressRM" // Tu usuario (necesario para la edición)
+
+    companion object {
+        const val ARG_REPO = "repo_data"
+
+        // Función estática para pasar el objeto Repository al Fragmento
+        fun newInstance(repo: Repository): RepositoryFormFragment {
+            val fragment = RepositoryFormFragment()
+            val args = Bundle()
+            // El objeto Repository debe ser Parcelable (asumo que lo es)
+            args.putParcelable(ARG_REPO, repo)
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -27,37 +44,57 @@ class RepositoryFormFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 1. Vincular los controles visuales Inputs y Botón
         val etName = view.findViewById<TextInputEditText>(R.id.etRepoName)
         val etDesc = view.findViewById<TextInputEditText>(R.id.etRepoDesc)
         val btnCreate = view.findViewById<Button>(R.id.btnCreate)
 
-        // 2. Programar el clic del botón
-        btnCreate.setOnClickListener {
-            val nombre = etName.text.toString()
-            val descripcion = etDesc.text.toString()
+        // Revisar si recibimos datos (Modo Edición)
+        arguments?.let {
+            // Se asume que Repository es Parcelable
+            editingRepo = it.getParcelable(ARG_REPO)
+            setupEditMode(etName, etDesc, btnCreate)
+        }
 
-            // Validación simple: El nombre es obligatorio en GitHub
-            if (nombre.isNotEmpty()) {
-                crearRepositorioEnGitHub(nombre, descripcion)
-            } else {
-                etName.error = "El nombre es obligatorio"
+        // Si es Modo CREACIÓN (Lógica Lab 5)
+        if (editingRepo == null) {
+            btnCreate.setOnClickListener {
+                val nombre = etName.text.toString()
+                val descripcion = etDesc.text.toString()
+                if (nombre.isNotEmpty()) {
+                    crearRepositorioEnGitHub(nombre, descripcion)
+                } else {
+                    etName.error = "El nombre es obligatorio"
+                }
             }
         }
     }
 
-    // LÓGICA DE RETROFIT POST
+    // LÓGICA DE INTERFAZ para Modo Edición (REQUISITO EXAMEN)
+    private fun setupEditMode(etName: TextInputEditText, etDesc: TextInputEditText, btnCreate: Button) {
+        // REQUISITO: El nombre NO debe ser editable
+        etName.setText(editingRepo?.name)
+        etName.isEnabled = false
+
+        btnCreate.text = "Guardar Cambios"
+        etDesc.setText(editingRepo?.description)
+
+        // Lógica de Edición (PATCH)
+        btnCreate.setOnClickListener {
+            val nuevaDescripcion = etDesc.text.toString()
+            if (editingRepo != null) {
+                editarRepositorioEnGitHub(editingRepo!!, nuevaDescripcion)
+            }
+        }
+    }
+
+    // LÓGICA DE API: CREAR (POST - Lab 5)
     private fun crearRepositorioEnGitHub(nombre: String, descripcion: String) {
-        // A. Configurar Retrofit
         val retrofit = Retrofit.Builder()
             .baseUrl("https://api.github.com/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-
         val service = retrofit.create(GitHubApiService::class.java)
 
-        // B. Preparar el objeto a enviar
-        // GitHub asigna las estrellas y el lenguaje automáticamente, así que envi defaults
         val nuevoRepo = Repository(
             name = nombre,
             description = descripcion,
@@ -65,24 +102,49 @@ class RepositoryFormFragment : Fragment() {
             stars = 0
         )
 
-        // C. Ejecutar la llamada POST
         service.createRepository(nuevoRepo).enqueue(object : Callback<Repository> {
             override fun onResponse(call: Call<Repository>, response: Response<Repository>) {
                 if (response.isSuccessful) {
-                    // ¡ÉXITO! (HTTP 201)
-                    Toast.makeText(context, "¡Repositorio Creado con Éxito!", Toast.LENGTH_LONG).show()
-
-                    // Volver a la lista automáticamente
+                    Toast.makeText(context, "¡Repositorio creado!", Toast.LENGTH_LONG).show()
                     parentFragmentManager.popBackStack()
                 } else {
-                    // ERROR si el nombre ya existe
-                    Toast.makeText(context, "Error al crear: ${response.code()}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Error: ${response.code()}", Toast.LENGTH_LONG).show()
                 }
             }
-
             override fun onFailure(call: Call<Repository>, t: Throwable) {
-                Log.e("API", "Fallo de red: ${t.message}")
-                Toast.makeText(context, "Error de conexión", Toast.LENGTH_SHORT).show()
+                Log.e("API", "Error POST: ${t.message}")
+                Toast.makeText(context, "Fallo de conexión", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    // LÓGICA DE API: EDITAR (PATCH - EXAMEN)
+    private fun editarRepositorioEnGitHub(repo: Repository, nuevaDescripcion: String) {
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://api.github.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val service = retrofit.create(GitHubApiService::class.java)
+
+        // Solo enviamos los campos que queremos actualizar
+        val actualizacion = Repository(
+            name = repo.name,
+            description = nuevaDescripcion,
+            language = repo.language,
+            stars = repo.stars
+        )
+
+        service.editRepository(miUsuario, repo.name, actualizacion).enqueue(object : Callback<Repository> {
+            override fun onResponse(call: Call<Repository>, response: Response<Repository>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(context, "¡Edición exitosa!", Toast.LENGTH_LONG).show()
+                    parentFragmentManager.popBackStack()
+                } else {
+                    Toast.makeText(context, "Error ${response.code()} al editar", Toast.LENGTH_LONG).show()
+                }
+            }
+            override fun onFailure(call: Call<Repository>, t: Throwable) {
+                Toast.makeText(context, "Fallo de red al editar", Toast.LENGTH_SHORT).show()
             }
         })
     }

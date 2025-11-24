@@ -1,53 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:orientation="horizontal"
-android:padding="16dp"
-android:gravity="center_vertical"
-android:background="?attr/selectableItemBackground">
-
-<ImageView
-    android:id="@+id/imgIcon"
-    android:layout_width="48dp"
-    android:layout_height="48dp"
-    android:src="@android:drawable/sym_def_app_icon"
-    android:contentDescription="Icono de repositorio"
-    android:layout_marginEnd="16dp"/>
-
-<LinearLayout
-    android:layout_width="0dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_weight="1"
-    android:orientation="vertical">
+    android:orientation="horizontal"
+    android:padding="16dp"
+    android:gravity="center_vertical"
+    android:background="?attr/selectableItemBackground">
 
-    <TextView
-        android:id="@+id/tvRepoName"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Nombre del Repositorio"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:textColor="@android:color/black"/>
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginEnd="16dp">
 
-    <TextView
-        android:id="@+id/tvRepoDesc"
-        android:layout_width="wrap_content"
+        <ImageView
+            android:id="@+id/imgIcon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@android:drawable/sym_def_app_icon"
+            android:contentDescription="Icono Repositorio" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
+
+            <ImageView
+                android:id="@+id/btnEdit"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                app:srcCompat="@drawable/ic_edit"
+                app:tint="#4CAF50"
+                android:contentDescription="Editar"
+                android:layout_marginEnd="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless"/>
+            <ImageView
+                android:id="@+id/btnDelete"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                app:srcCompat="@drawable/ic_delete"
+                app:tint="#F44336"
+                android:contentDescription="Eliminar"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Descripción corta del proyecto..."
-        android:textSize="14sp"
-        android:maxLines="2"
-        android:ellipsize="end"
-        android:textColor="@android:color/darker_gray"/>
-</LinearLayout>
+        android:layout_weight="1"
+        android:orientation="vertical">
 
-<TextView
-    android:id="@+id/tvLanguage"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Kotlin"
-    android:textSize="12sp"
-    android:textStyle="italic"
-    android:layout_marginStart="8dp"/>
+        <TextView
+            android:id="@+id/tvRepoName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nombre del Repositorio"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"/>
+
+        <TextView
+            android:id="@+id/tvRepoDesc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Descripción del proyecto..."
+            android:textSize="14sp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:textColor="@android:color/darker_gray"/>
+
+        <TextView
+            android:id="@+id/tvLanguage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Kotlin"
+            android:textSize="12sp"
+            android:textStyle="italic"
+            android:layout_marginTop="4dp"/>
+    </LinearLayout>
 
 </LinearLayout>

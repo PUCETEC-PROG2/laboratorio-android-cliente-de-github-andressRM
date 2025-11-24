@@ -1,26 +1,26 @@
 package ec.edu.uisek.githubclient
 
+import android.os.Parcelable // Importación requerida
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize // Importación requerida
 
 /**
- * Data Class: Repository
+ *  Repository
 
- * EXPLICACIÓN FASE 4 (Retrofit):
- *  modelo para mapear los datos que vienen de la API de GitHub.
- *
- * @SerializedName: Es la etiqueta que le dice a GSON:
- * "Oye, busca en el JSON el campo 'stargazers_count' y guarda su valor en mi variable 'stars'".
+ * @Parcelize y : Parcelable le dan el sello necesario para que el objeto
+ * pueda vajar dentro del Bundle entre los Fragmentos.
  */
+@Parcelize
 data class Repository(
     @SerializedName("name")
     val name: String,
 
     @SerializedName("description")
-    val description: String?, // El ? significa que aceptamos nulos (si no hay descripción)
+    val description: String?,
 
     @SerializedName("language")
-    val language: String?,    // Puede ser nulo si el repo no tiene lenguaje definido
+    val language: String?,
 
-    @SerializedName("stargazers_count") // renombramiento!
+    @SerializedName("stargazers_count")
     val stars: Int
-)
+) : Parcelable //
