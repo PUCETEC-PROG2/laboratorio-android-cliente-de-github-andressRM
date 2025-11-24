@@ -1,21 +1,25 @@
 package ec.edu.uisek.githubclient
 
 import retrofit2.Call
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Headers
+import retrofit2.http.POST
 import retrofit2.http.Path
 
 /**
- * INTERFAZ: GitHubApiService
-
- * EXPLICACIÓN FASE 4 (Retrofit):
- * Esta interfaz es el Contrato" que define cómo nos comunicamos con GitHub.
- * Retrofit leerá este archivo y generará el código de red automáticamente.
+ * INTERFAZ LAB 5
+ * con método POST para crear repositorios.
  */
 interface GitHubApiService {
 
-    // @GET: Indica que vamos a LEER datos (petición HTTP GET).
-    // "users/{username}/repos": Es la parte final de la URL (Endpoint).
-    // {username} es una variable que cambiara dinámicamente.
+    //
     @GET("users/{username}/repos")
     fun listRepositories(@Path("username") username: String): Call<List<Repository>>
+
+    // Part 2: Crear Nueva para Lab 5
+    // Usamos @Headers para enviar token
+    @Headers(" Token ")
+    @POST("user/repos")
+    fun createRepository(@Body repo: Repository): Call<Repository>
 }
